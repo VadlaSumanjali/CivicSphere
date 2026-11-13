@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Complaint — CivicSphere</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <a class="brand" href="dashboard.html">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>CivicSphere</span>
+          </a>
+          <div class="sidebar-role">Citizen Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item active" href="submit-complaint.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Submit Complaint
+        </a>
+        <a class="nav-item" href="my-complaints.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          My Complaints
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-chip-name" id="sidebarUserName">Loading...</div>
+          <div class="user-chip-email" id="sidebarUserEmail"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+          <h1>Submit Civic Complaint</h1>
+        </div>
+        <div>
+          <a class="btn btn-outline btn-sm" href="my-complaints.html">My Complaints</a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div id="recurrenceParentBanner" style="display:none;background:var(--orange-soft);border:1px solid #FCD34D;color:#92400E;padding:14px 18px;border-radius:var(--radius);margin-bottom:20px;"></div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Complaint Details &amp; Location</h2>
+            <button type="button" id="detectLocationBtn" class="btn btn-outline btn-sm">Use My GPS Location</button>
+          </div>
+          <div class="panel-body">
+            <form id="submitComplaintForm" novalidate>
+              <div class="form-group">
+                <label class="form-label" for="parentComplaintSelect">Reporting a Recurrence of a Previously Resolved Issue? (Optional)</label>
+                <select class="form-control" id="parentComplaintSelect">
+                  <option value="">No — This is a new civic issue</option>
+                </select>
+                <div class="form-hint">If a previously resolved issue has reappeared, select it here to link the new report without overwriting historical records.</div>
+              </div>
+
+              <div class="dash-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="title">Complaint Title *</label>
+                  <input class="form-control" type="text" id="title" name="title" placeholder="e.g. Deep pothole near JNTU Metro Pillar 712" required minlength="5" maxlength="200">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="categoryId">Issue Category *</label>
+                  <select class="form-control" id="categoryId" name="categoryId" required>
+                    <option value="">Loading categories...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="description">Detailed Description *</label>
+                <textarea class="form-control" id="description" name="description" placeholder="Describe the problem, severity, and exact condition (minimum 15 characters)..." required minlength="15"></textarea>
+                <div class="form-hint">Clear descriptions help municipal teams triage faster and improve recurring issue detection accuracy.</div>
+              </div>
+
+              <div class="dash-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="area">Area / Locality *</label>
+                  <input class="form-control" type="text" id="area" name="area" placeholder="e.g. Kukatpally" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="city">City *</label>
+                  <input class="form-control" type="text" id="city" name="city" placeholder="e.g. Hyderabad" required>
+                </div>
+              </div>
+
+              <div class="dash-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="state">State *</label>
+                  <input class="form-control" type="text" id="state" name="state" placeholder="e.g. Telangana" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="landmark">Nearby Landmark (Optional)</label>
+                  <input class="form-control" type="text" id="landmark" name="landmark" placeholder="e.g. Opposite JNTU Main Gate">
+                </div>
+              </div>
+
+              <div class="dash-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="latitude">Latitude (Optional)</label>
+                  <input class="form-control" type="number" step="any" id="latitude" name="latitude" placeholder="e.g. 17.4948">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="longitude">Longitude (Optional)</label>
+                  <input class="form-control" type="number" step="any" id="longitude" name="longitude" placeholder="e.g. 78.3996">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="imageInput">Evidence Image (Optional — JPG, PNG, WEBP, GIF, max 5 MB)</label>
+                <input class="form-control" type="file" id="imageInput" name="image" accept="image/jpeg,image/png,image/webp,image/gif">
+                <div class="image-preview-box" id="imagePreviewBox">
+                  <img id="imagePreviewImg" alt="Evidence preview">
+                  <div>
+                    <div id="imagePreviewMeta" style="font-size:0.86rem;font-weight:600;margin-bottom:6px;"></div>
+                    <button type="button" id="clearImageBtn" class="btn btn-outline btn-sm">Remove Image</button>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:12px;margin-top:20px;">
+                <button type="submit" id="submitComplaintBtn" class="btn btn-primary btn-lg">Submit Complaint</button>
+                <a class="btn btn-outline btn-lg" href="dashboard.html">Cancel</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/complaints.js"></script>
+  <script>window.CivicComplaints.initSubmitComplaintPage();</script>
+</body>
+</html>
+

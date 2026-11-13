@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicSphere — Smart Citizen Complaint Management &amp; Recurring Civic Issue Detection</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </span>
+        <span>CivicSphere</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#categories">Categories</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="#recurrence-engine">Recurrence Engine</a>
+        <a href="#live-stats">Platform Metrics</a>
+      </nav>
+      <div class="nav-actions">
+        <a class="btn btn-outline btn-sm" href="login.html">Login</a>
+        <a class="btn btn-primary btn-sm" href="register.html">Register</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-eyebrow">Civic Infrastructure Accountability Platform</div>
+        <h1>Building Better Cities Through Accountable Civic Action.</h1>
+        <p class="hero-subtitle">
+          Report civic problems, track resolutions, and help prevent the same issues from happening again.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="register.html">Citizen Registration</a>
+          <a class="btn btn-outline btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.4);" href="login.html">Citizen &amp; Admin Login</a>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <h3>Resolution Accountability Lifecycle</h3>
+        <div class="hero-step">
+          <span class="hero-step-num">1</span>
+          <div><strong>Report With Evidence</strong><br>Citizens submit geotagged or landmarked complaints with photographic proof.</div>
+        </div>
+        <div class="hero-step">
+          <span class="hero-step-num">2</span>
+          <div><strong>Department Dispatch</strong><br>Administrators assign verified issues to Road, Water, Sanitation, Drainage, or Lighting teams.</div>
+        </div>
+        <div class="hero-step">
+          <span class="hero-step-num">3</span>
+          <div><strong>Immutable Audit Trail</strong><br>Every status transition records timestamps, remarks, and resolution evidence without overwriting history.</div>
+        </div>
+        <div class="hero-step">
+          <span class="hero-step-num">4</span>
+          <div><strong>Automated Recurrence Detection</strong><br>Rule-based scoring flags re-emerging issues at previously resolved locations for accountability review.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="categories" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Civic Issue Coverage</span>
+        <h2>Supported Infrastructure Categories</h2>
+        <p>Structured municipal routing across essential urban infrastructure and public service domains.</p>
+      </div>
+      <div class="grid-3" id="publicCategoriesGrid">
+        <div class="card"><h3>Road Damage &amp; Potholes</h3><p>Potholes, cracked asphalt, sunken road surfaces, and damaged footpaths.</p></div>
+        <div class="card"><h3>Garbage Accumulation</h3><p>Uncollected municipal waste, overflowing bins, and illegal dumping.</p></div>
+        <div class="card"><h3>Water Leakage</h3><p>Broken water mains, leaking valves, and potable water wastage.</p></div>
+        <div class="card"><h3>Drainage &amp; Sewage</h3><p>Blocked storm drains, sewage overflow, and waterlogging issues.</p></div>
+        <div class="card"><h3>Streetlight Failures</h3><p>Non-functional streetlights, flickering poles, and dark stretches.</p></div>
+        <div class="card"><h3>Public Sanitation</h3><p>Unclean public restrooms, open waste hazards, and vector breeding spots.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Workflow</span>
+        <h2>How CivicSphere Works</h2>
+        <p>Transparent coordination from initial citizen report to verified closure and recurrence monitoring.</p>
+      </div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-icon">1</div>
+          <h3>Submit Report</h3>
+          <p>Log issue category, area, landmark or GPS coordinates, and upload validated image evidence.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">2</div>
+          <h3>Triage &amp; Assign</h3>
+          <p>Municipal administrators review submissions and dispatch the responsible civic department.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">3</div>
+          <h3>Track Live Timeline</h3>
+          <p>Follow progress from Submitted through Under Review, Assigned, In Progress, Resolved, and Closed.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">4</div>
+          <h3>Prevent Recurrence</h3>
+          <p>If an identical problem reappears after repair, CivicSphere links both records and alerts leadership.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Platform Capabilities</span>
+        <h2>Built for Municipal Transparency</h2>
+        <p>Designed with strict role-based security, audit trails, and real-time analytics.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Non-Destructive History</h3>
+          <p>Old complaints are never overwritten. Every new complaint stays an independent, auditable record.</p>
+        </div>
+        <div class="card">
+          <h3>Evidence Verification</h3>
+          <p>MIME, extension, size, and magic-byte verified image uploads for both citizen reports and admin resolutions.</p>
+        </div>
+        <div class="card">
+          <h3>Executive Analytics</h3>
+          <p>Interactive Chart.js dashboards tracking category distribution, department workload, and monthly recurrence trends.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recurrence-engine" class="section section-alt">
+    <div class="container">
+      <div class="recurrence-banner">
+        <div>
+          <span class="section-tag" style="color:var(--teal-soft);">Core Differentiator</span>
+          <h2 style="margin:0 0 14px;font-size:1.85rem;">Rule-Based Recurring Civic Issue Detection Engine</h2>
+          <p style="color:#CBD5E1;margin:0 0 16px;">
+            When a new complaint is filed, CivicSphere compares it against historical resolved and closed records using deterministic Java scoring—requiring category, location proximity, and description similarity before raising a candidate alert.
+          </p>
+          <p style="color:#94A3B8;font-size:0.88rem;margin:0;">
+            Candidates scoring 70/100 or higher are queued for administrator confirmation or rejection, protecting repair accountability.
+          </p>
+        </div>
+        <div class="score-breakdown">
+          <div class="score-row"><span>Same Complaint Category</span><span>30 pts</span></div>
+          <div class="score-row"><span>Location Match (Haversine &le;100m or Area/City/Landmark)</span><span>40 pts</span></div>
+          <div class="score-row"><span>Description Keyword Similarity (Jaccard)</span><span>20 pts</span></div>
+          <div class="score-row"><span>Prior Complaint Resolved / Closed</span><span>10 pts</span></div>
+          <div class="score-row"><span>Recurrence Alert Threshold</span><span>&ge; 70 / 100 pts</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="live-stats" class="section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Database Telemetry</span>
+        <h2>Platform Activity Overview</h2>
+        <p>Live counts queried directly from the CivicSphere database.</p>
+      </div>
+      <div class="grid-4">
+        <div class="card stat-card-public">
+          <div class="stat-val" id="pubTotalComplaints">—</div>
+          <div class="stat-lbl">Complaints Logged</div>
+        </div>
+        <div class="card stat-card-public">
+          <div class="stat-val" id="pubResolvedComplaints">—</div>
+          <div class="stat-lbl">Issues Resolved / Closed</div>
+        </div>
+        <div class="card stat-card-public">
+          <div class="stat-val" id="pubActiveDepartments">—</div>
+          <div class="stat-lbl">Active Civic Departments</div>
+        </div>
+        <div class="card stat-card-public">
+          <div class="stat-val" id="pubRecurrenceAlerts">—</div>
+          <div class="stat-lbl">Recurrence Links Flagged</div>
+        </div>
+      </div>
+      <p class="stat-caption" id="pubStatsStatus">Fetching live database counts...</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>
+        <strong style="color:#fff;">CivicSphere</strong> &mdash; Smart Citizen Complaint Management &amp; Recurring Civic Issue Detection Platform
+      </div>
+      <div style="display:flex;gap:18px;">
+        <a style="color:#CBD5E1;" href="login.html">Login</a>
+        <a style="color:#CBD5E1;" href="register.html">Register</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script>
+    (function () {
+      const API = window.CivicAPI;
+      API.request('/api/public/overview')
+        .then((res) => {
+          const d = res.data || {};
+          const stats = d.stats || {};
+          document.getElementById('pubTotalComplaints').textContent = stats.totalComplaints ?? 0;
+          document.getElementById('pubResolvedComplaints').textContent = stats.resolvedComplaints ?? 0;
+          document.getElementById('pubActiveDepartments').textContent = stats.activeDepartments ?? 0;
+          document.getElementById('pubRecurrenceAlerts').textContent = stats.recurrenceAlerts ?? 0;
+          document.getElementById('pubStatsStatus').textContent = 'Live counts retrieved from MySQL (civicsphere_db).';
+
+          const cats = d.categories || [];
+          if (cats.length) {
+            const grid = document.getElementById('publicCategoriesGrid');
+            grid.innerHTML = cats.map((c) =>
+              '<div class="card"><h3>' + API.escapeHtml(c.name) + '</h3><p>' + API.escapeHtml(c.description || '') + '</p></div>'
+            ).join('');
+          }
+        })
+        .catch(() => {
+          document.getElementById('pubTotalComplaints').textContent = '0';
+          document.getElementById('pubResolvedComplaints').textContent = '0';
+          document.getElementById('pubActiveDepartments').textContent = '0';
+          document.getElementById('pubRecurrenceAlerts').textContent = '0';
+          document.getElementById('pubStatsStatus').textContent = 'Database connection not yet initialized; live metrics appear once schema is configured.';
+        });
+    })();
+  </script>
+</body>
+</html>
+

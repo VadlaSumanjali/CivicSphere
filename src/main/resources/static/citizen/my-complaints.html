@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Complaints — CivicSphere</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <a class="brand" href="dashboard.html">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>CivicSphere</span>
+          </a>
+          <div class="sidebar-role">Citizen Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="submit-complaint.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Submit Complaint
+        </a>
+        <a class="nav-item active" href="my-complaints.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          My Complaints
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-chip-name" id="sidebarUserName">Loading...</div>
+          <div class="user-chip-email" id="sidebarUserEmail"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+          <h1>My Submitted Complaints</h1>
+        </div>
+        <div>
+          <a class="btn btn-primary" href="submit-complaint.html">+ Submit Complaint</a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="filters-bar">
+          <input class="form-control" type="text" id="filterSearch" placeholder="Search by ID, title, or location...">
+          <select class="form-control" id="filterCategory">
+            <option value="">All Categories</option>
+          </select>
+          <select class="form-control" id="filterStatus">
+            <option value="">All Statuses</option>
+            <option value="SUBMITTED">Submitted</option>
+            <option value="UNDER_REVIEW">Under Review</option>
+            <option value="ASSIGNED">Assigned</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CLOSED">Closed</option>
+          </select>
+          <button type="button" id="applyFiltersBtn" class="btn btn-navy">Search</button>
+          <button type="button" id="resetFiltersBtn" class="btn btn-outline">Reset</button>
+        </div>
+
+        <div class="panel">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th>Submitted</th>
+                  <th>Department</th>
+                  <th>Status</th>
+                  <th>Recurrence</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="myComplaintsBody">
+                <tr><td colspan="9" class="loading-state"><span class="spinner"></span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination">
+            <span id="paginationInfo">Loading...</span>
+            <div class="pagination-controls">
+              <button type="button" id="prevPageBtn" class="btn btn-outline btn-sm">Previous</button>
+              <button type="button" id="nextPageBtn" class="btn btn-outline btn-sm">Next</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/complaints.js"></script>
+  <script>window.CivicComplaints.initMyComplaintsPage();</script>
+</body>
+</html>
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — CivicSphere</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-page">
+    <aside class="auth-aside">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </span>
+        <span>CivicSphere</span>
+      </a>
+
+      <div class="auth-aside-content">
+        <h1>Accountable Civic Operations Portal</h1>
+        <p>Sign in with your citizen or municipal administrator account to track complaints, assign departments, and review recurring civic issues.</p>
+        <ul class="auth-feature-list">
+          <li><span class="auth-feature-dot"></span><span>Real-time complaint timeline with immutable status history</span></li>
+          <li><span class="auth-feature-dot"></span><span>Automated location &amp; description recurrence matching</span></li>
+          <li><span class="auth-feature-dot"></span><span>Role-based access control backed by secure sessions</span></li>
+        </ul>
+      </div>
+
+      <div style="font-size:0.84rem;color:#94A3B8;">
+        &copy; CivicSphere Platform
+      </div>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="auth-sub">Enter your registered email and password to continue.</p>
+
+        <div id="authAlert" class="auth-alert auth-alert-error" role="alert"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input class="form-control" type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="password-wrap">
+              <input class="form-control" type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="password-toggle" data-target="password">Show</button>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%;margin-top:6px;">
+            Sign In
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          New citizen? <a href="register.html">Create a CivicSphere account</a><br>
+          <a href="index.html" style="display:inline-block;margin-top:8px;color:var(--text-light);">Back to Landing Page</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>window.CivicAuth.initLoginPage();</script>
+</body>
+</html>
+

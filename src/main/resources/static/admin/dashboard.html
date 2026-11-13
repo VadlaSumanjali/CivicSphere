@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Analytics Dashboard — CivicSphere</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <a class="brand" href="dashboard.html">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>CivicSphere</span>
+          </a>
+          <div class="sidebar-role">Admin Command Center</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="complaints.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Complaints
+        </a>
+        <a class="nav-item" href="recurrence.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Recurrence Alerts
+        </a>
+        <a class="nav-item" href="departments.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+          Departments
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-chip-name" id="sidebarUserName">Loading...</div>
+          <div class="user-chip-email" id="sidebarUserEmail"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+          <h1>Municipal Analytics &amp; Overview</h1>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <a class="btn btn-outline btn-sm" href="recurrence.html">Review Recurrences</a>
+          <a class="btn btn-primary btn-sm" href="complaints.html">Manage Complaints</a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-accent-teal">
+            <div class="kpi-label">Total Complaints</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+          </div>
+          <div class="kpi-card kpi-accent-orange">
+            <div class="kpi-label">Pending Triage</div>
+            <div class="kpi-value" id="kpiPending">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">In Progress</div>
+            <div class="kpi-value" id="kpiInProgress">0</div>
+          </div>
+          <div class="kpi-card kpi-accent-green">
+            <div class="kpi-label">Resolved / Closed</div>
+            <div class="kpi-value" id="kpiResolved">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Recurrence Candidates</div>
+            <div class="kpi-value" id="kpiCandidates">0</div>
+          </div>
+          <div class="kpi-card kpi-accent-red">
+            <div class="kpi-label">Confirmed Recurring</div>
+            <div class="kpi-value" id="kpiConfirmedRec">0</div>
+          </div>
+          <div class="kpi-card kpi-accent-orange">
+            <div class="kpi-label">Open Recurrence Alerts</div>
+            <div class="kpi-value" id="kpiOpenRec">0</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="panel">
+            <div class="panel-header"><h3>Complaints by Category</h3></div>
+            <div class="panel-body"><div class="chart-box"><canvas id="chartByCategory"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>Complaints by Status</h3></div>
+            <div class="panel-body"><div class="chart-box"><canvas id="chartByStatus"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>Complaints by Department</h3></div>
+            <div class="panel-body"><div class="chart-box"><canvas id="chartByDepartment"></canvas></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><h3>Monthly Complaint Trends</h3></div>
+            <div class="panel-body"><div class="chart-box"><canvas id="chartMonthlyTrends"></canvas></div></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><h3>Recurring Issue Detection Trends</h3></div>
+          <div class="panel-body"><div class="chart-box"><canvas id="chartRecurrenceTrends"></canvas></div></div>
+        </div>
+
+        <div class="dash-grid-2">
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Recent Submissions</h3>
+              <a class="btn btn-outline btn-sm" href="complaints.html">View All</a>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr><th>ID</th><th>Title</th><th>Citizen</th><th>Status</th><th>Submitted</th></tr>
+                </thead>
+                <tbody id="adminRecentBody">
+                  <tr><td colspan="5" class="loading-state"><span class="spinner"></span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h3>Pending Recurrence Alerts</h3>
+              <a class="btn btn-outline btn-sm" href="recurrence.html">Verify Queue</a>
+            </div>
+            <div class="panel-body" id="adminPendingRecurrences">
+              <div class="loading-state"><span class="spinner"></span></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../assets/chart.umd.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>window.CivicAdmin.initAdminDashboard();</script>
+</body>
+</html>
+

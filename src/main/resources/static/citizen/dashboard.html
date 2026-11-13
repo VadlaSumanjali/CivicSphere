@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Dashboard — CivicSphere</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <a class="brand" href="dashboard.html">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>CivicSphere</span>
+          </a>
+          <div class="sidebar-role">Citizen Portal</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="submit-complaint.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Submit Complaint
+        </a>
+        <a class="nav-item" href="my-complaints.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          My Complaints
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-chip-name" id="sidebarUserName">Loading...</div>
+          <div class="user-chip-email" id="sidebarUserEmail"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+          <div>
+            <h1 id="welcomeBanner">Citizen Dashboard</h1>
+          </div>
+        </div>
+        <div>
+          <a class="btn btn-primary" href="submit-complaint.html">+ Submit New Complaint</a>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-accent-teal">
+            <div class="kpi-label">Total Complaints</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-sub">All issues filed by you</div>
+          </div>
+          <div class="kpi-card kpi-accent-orange">
+            <div class="kpi-label">Pending (Submitted)</div>
+            <div class="kpi-value" id="kpiPending">0</div>
+            <div class="kpi-sub">Awaiting triage</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Under Review</div>
+            <div class="kpi-value" id="kpiReview">0</div>
+            <div class="kpi-sub">Being verified</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">In Progress</div>
+            <div class="kpi-value" id="kpiProgress">0</div>
+            <div class="kpi-sub">Assigned / active repair</div>
+          </div>
+          <div class="kpi-card kpi-accent-green">
+            <div class="kpi-label">Resolved / Closed</div>
+            <div class="kpi-value" id="kpiResolved">0</div>
+            <div class="kpi-sub">Completed resolutions</div>
+          </div>
+          <div class="kpi-card kpi-accent-red">
+            <div class="kpi-label">Possible Recurring</div>
+            <div class="kpi-value" id="kpiRecurring">0</div>
+            <div class="kpi-sub">Flagged recurrence links</div>
+          </div>
+        </div>
+
+        <div class="dash-grid-2">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Recent Complaints</h2>
+              <a class="btn btn-outline btn-sm" href="my-complaints.html">View All</a>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentComplaintsBody">
+                  <tr><td colspan="6" class="loading-state"><span class="spinner"></span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Status Distribution</h2>
+            </div>
+            <div class="panel-body">
+              <div class="chart-box">
+                <canvas id="citizenStatusChart"></canvas>
+                <div id="chartEmptyMsg" class="empty-state" style="display:none;">Submit a complaint to visualize status distribution.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-grid-2">
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Recent Activity</h2>
+            </div>
+            <div class="panel-body" id="recentActivityList">
+              <div class="loading-state"><span class="spinner"></span></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Recurrence Alerts on Your Reports</h2>
+            </div>
+            <div class="panel-body" id="recurrenceAlertsList">
+              <div class="loading-state"><span class="spinner"></span></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../assets/chart.umd.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/citizen.js"></script>
+  <script>window.CivicCitizen.initCitizenDashboard();</script>
+</body>
+</html>
+

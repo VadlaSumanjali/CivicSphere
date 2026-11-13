@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recurrence Detection &amp; Verification — CivicSphere Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <a class="brand" href="dashboard.html">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span>CivicSphere</span>
+          </a>
+          <div class="sidebar-role">Admin Command Center</div>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" href="dashboard.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="complaints.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Complaints
+        </a>
+        <a class="nav-item active" href="recurrence.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Recurrence Alerts
+        </a>
+        <a class="nav-item" href="departments.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+          Departments
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-chip-name" id="sidebarUserName">Loading...</div>
+          <div class="user-chip-email" id="sidebarUserEmail"></div>
+        </div>
+        <button type="button" id="logoutBtn" class="btn btn-outline btn-sm" style="width:100%;background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2);">
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">&#9776;</button>
+          <h1>Recurring Civic Issue Verification</h1>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn btn-navy btn-sm js-rec-filter" data-status="">All</button>
+          <button type="button" class="btn btn-outline btn-sm js-rec-filter" data-status="PENDING">Pending</button>
+          <button type="button" class="btn btn-outline btn-sm js-rec-filter" data-status="CONFIRMED">Confirmed</button>
+          <button type="button" class="btn btn-outline btn-sm js-rec-filter" data-status="REJECTED">Rejected</button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <div id="recurrenceList">
+          <div class="loading-state"><span class="spinner"></span></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Verify Recurrence Modal -->
+  <div class="modal-backdrop" id="verifyRecModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="verifyModalTitle">Verify Recurrence</h3>
+        <button type="button" class="toast-close" data-close-modal="verifyRecModal">&times;</button>
+      </div>
+      <form id="verifyRecurrenceForm">
+        <div class="modal-body">
+          <input type="hidden" id="verifyRecId">
+          <input type="hidden" id="verifyDecision">
+          <div class="form-group">
+            <label class="form-label" for="verifyRemarks">Verification Remarks</label>
+            <textarea class="form-control" id="verifyRemarks" placeholder="Document audit justification for confirming or rejecting this recurrence..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="verifyRecModal">Cancel</button>
+          <button type="submit" id="verifySubmitBtn" class="btn btn-primary">Submit Decision</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div class="modal-backdrop" id="historyModal">
+    <div class="modal" style="max-width:600px;">
+      <div class="modal-header">
+        <h3 id="historyModalTitle">Complaint History</h3>
+        <button type="button" class="toast-close" data-close-modal="historyModal">&times;</button>
+      </div>
+      <div class="modal-body" id="historyModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close-modal="historyModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/recurrence.js"></script>
+  <script>window.CivicRecurrence.initRecurrencePage();</script>
+</body>
+</html>
+
