@@ -27,7 +27,8 @@
         <a href="#live-stats">Platform Metrics</a>
       </nav>
       <div class="nav-actions">
-        <a class="btn btn-outline btn-sm" href="login.html">Login</a>
+        <a class="btn btn-outline btn-sm" href="citizen/login.html">Citizen Sign In</a>
+        <a class="btn btn-outline btn-sm" style="border-color:#CBD5E1;color:var(--text);" href="admin/login.html">Admin Portal</a>
         <a class="btn btn-primary btn-sm" href="register.html">Register</a>
       </div>
     </div>
@@ -43,7 +44,8 @@
         </p>
         <div class="hero-cta">
           <a class="btn btn-primary btn-lg" href="register.html">Citizen Registration</a>
-          <a class="btn btn-outline btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.4);" href="login.html">Citizen &amp; Admin Login</a>
+          <a class="btn btn-outline btn-lg" style="background:transparent;color:#fff;border-color:rgba(255,255,255,0.4);" href="citizen/login.html">Citizen Sign In</a>
+          <a class="btn btn-outline btn-lg" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.4);" href="admin/login.html">Official Admin Portal &rarr;</a>
         </div>
       </div>
 
@@ -202,8 +204,9 @@
         <strong style="color:#fff;">CivicSphere</strong> &mdash; Smart Citizen Complaint Management &amp; Recurring Civic Issue Detection Platform
       </div>
       <div style="display:flex;gap:18px;">
-        <a style="color:#CBD5E1;" href="login.html">Login</a>
-        <a style="color:#CBD5E1;" href="register.html">Register</a>
+        <a style="color:#CBD5E1;" href="citizen/login.html">Citizen Sign In</a>
+        <a style="color:#CBD5E1;" href="admin/login.html">Admin Portal</a>
+        <a style="color:#CBD5E1;" href="register.html">Citizen Registration</a>
       </div>
     </div>
   </footer>
@@ -220,7 +223,7 @@
           document.getElementById('pubResolvedComplaints').textContent = stats.resolvedComplaints ?? 0;
           document.getElementById('pubActiveDepartments').textContent = stats.activeDepartments ?? 0;
           document.getElementById('pubRecurrenceAlerts').textContent = stats.recurrenceAlerts ?? 0;
-          document.getElementById('pubStatsStatus').textContent = 'Live counts retrieved from MySQL (civicsphere_db).';
+          document.getElementById('pubStatsStatus').textContent = 'Live telemetry from CivicSphere storage engine.';
 
           const cats = d.categories || [];
           if (cats.length) {

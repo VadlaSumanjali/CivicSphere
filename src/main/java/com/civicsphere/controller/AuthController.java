@@ -68,9 +68,29 @@ public class AuthController {
             @Valid @RequestBody LoginRequest reqBody,
             HttpServletRequest request,
             HttpServletResponse response) {
-        User verified = authService.authenticate(reqBody.getEmail(), reqBody.getPassword());
+        User verified = authService.authenticate(reqBody.getEmail(), reqBody.getPassword(), reqBody.getRole());
         String csrf = saveAuthenticatedSession(request, response, verified);
         return ResponseEntity.ok(ApiResponse.ok("Signed in successfully.", sessionPayload(verified, csrf)));
+    }
+
+    @PostMapping("/citizen/login")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> loginCitizen(
+            @Valid @RequestBody LoginRequest reqBody,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        User verified = authService.authenticate(reqBody.getEmail(), reqBody.getPassword(), User.ROLE_CITIZEN);
+        String csrf = saveAuthenticatedSession(request, response, verified);
+        return ResponseEntity.ok(ApiResponse.ok("Citizen signed in successfully.", sessionPayload(verified, csrf)));
+    }
+
+    @PostMapping("/admin/login")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> loginAdmin(
+            @Valid @RequestBody LoginRequest reqBody,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        User verified = authService.authenticate(reqBody.getEmail(), reqBody.getPassword(), User.ROLE_ADMIN);
+        String csrf = saveAuthenticatedSession(request, response, verified);
+        return ResponseEntity.ok(ApiResponse.ok("Administrator signed in successfully.", sessionPayload(verified, csrf)));
     }
 
     @PostMapping("/logout")

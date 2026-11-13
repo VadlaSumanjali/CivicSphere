@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Sign In — CivicSphere</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+  <div class="auth-page">
+    <aside class="auth-aside">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </span>
+        <span>CivicSphere</span>
+      </a>
+
+      <div class="auth-aside-content">
+        <h1>Civic Action &amp; Community Reporting</h1>
+        <p>Sign in with your citizen credentials to report neighborhood issues, track dispatch timelines, and view municipal repair progress.</p>
+        <ul class="auth-feature-list">
+          <li><span class="auth-feature-dot"></span><span>Submit geotagged complaints with photographic evidence</span></li>
+          <li><span class="auth-feature-dot"></span><span>Transparent 6-stage lifecycle tracking with live updates</span></li>
+          <li><span class="auth-feature-dot"></span><span>Report recurring civic issues against previous resolutions</span></li>
+        </ul>
+      </div>
+
+      <div style="font-size:0.84rem;color:#94A3B8;">
+        &copy; CivicSphere Citizen Portal
+      </div>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-card">
+        <span class="role-badge role-badge-citizen">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Citizen Portal
+        </span>
+        <h2>Citizen Sign In</h2>
+        <p class="auth-sub">Access your personal complaint dashboard and active reports.</p>
+
+        <div id="authAlert" class="auth-alert auth-alert-error" role="alert"></div>
+
+        <form id="loginForm" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="email">Citizen Email Address</label>
+            <input class="form-control" type="email" id="email" name="email" placeholder="citizen@example.com" required autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <div class="password-wrap">
+              <input class="form-control" type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+              <button type="button" class="password-toggle" data-target="password">Show</button>
+            </div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary" style="width:100%;margin-top:6px;">
+            Sign In to Citizen Dashboard
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          New citizen? <a href="../register.html">Create a Citizen Account</a>
+        </div>
+
+        <div class="portal-switch-box">
+          Municipal Commissioner or Department Officer?<br>
+          <a href="../admin/login.html">Access Official Administrator Portal &rarr;</a>
+        </div>
+
+        <div style="text-align:center;margin-top:12px;">
+          <a href="../index.html" style="font-size:0.85rem;color:var(--text-light);">&larr; Back to Landing Page</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <script>window.CivicAuth.initCitizenLoginPage();</script>
+</body>
+</html>
+

@@ -72,19 +72,25 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/logout")
+                        .ignoringRequestMatchers(
+                                "/api/auth/login", "/api/auth/citizen/login", "/api/auth/admin/login",
+                                "/api/auth/register", "/api/auth/logout"
+                        )
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", "/index.html", "/login.html", "/register.html",
+                                "/citizen/login", "/citizen/login.html", "/citizen/register",
+                                "/admin/login", "/admin/login.html",
                                 "/css/**", "/js/**", "/assets/**", "/favicon.ico", "/error"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/public/**", "/api/categories",
-                                "/api/auth/login", "/api/auth/register", "/api/auth/logout"
+                                "/api/auth/login", "/api/auth/citizen/login", "/api/auth/admin/login",
+                                "/api/auth/register", "/api/auth/logout"
                         ).permitAll()
-                        .requestMatchers("/citizen/**").hasAnyRole("CITIZEN", "ADMIN")
-                        .requestMatchers("/admin/**", "/api/admin/**", "/api/recurrence", "/api/recurrence/**").hasRole("ADMIN")
+                        .requestMatchers("/citizen/**", "/citizen/dashboard").hasRole("CITIZEN")
+                        .requestMatchers("/admin/**", "/admin/dashboard", "/api/admin/**", "/api/recurrence", "/api/recurrence/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/departments", "/api/complaints/*/status").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/departments/**", "/api/complaints/*/status").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/departments/**").hasRole("ADMIN")
@@ -97,17 +103,29 @@ public class SecurityConfig {
                                 writeJsonError(resp, HttpServletResponse.SC_UNAUTHORIZED,
                                         "Authentication required. Please sign in.");
                             } else {
-                                resp.sendRedirect(req.getContextPath() + "/login.html");
+                                String uri = req.getRequestURI();
+                                if (uri != null && uri.contains("/admin/")) {
+                                    resp.sendRedirect(req.getContextPath() + "/admin/login.html");
+                                } else {
+                                    resp.sendRedirect(req.getContextPath() + "/citizen/login.html");
+                                }
                             }
                         })
                         .accessDeniedHandler((req, resp, deniedEx) -> {
                             if (isApiRequest(req)) {
                                 String message = deniedEx instanceof CsrfException
                                         ? "Invalid or missing CSRF security token. Please refresh and try again."
-                                        : "Access denied. Administrator privileges required.";
+                                        : "Access denied. Insufficient privileges.";
                                 writeJsonError(resp, HttpServletResponse.SC_FORBIDDEN, message);
                             } else {
-                                resp.sendRedirect(req.getContextPath() + "/citizen/dashboard.html");
+                                String uri = req.getRequestURI();
+                                if (uri != null && uri.contains("/admin/")) {
+                                    resp.sendRedirect(req.getContextPath() + "/citizen/dashboard.html?error=admin_required");
+                                } else if (uri != null && uri.contains("/citizen/")) {
+                                    resp.sendRedirect(req.getContextPath() + "/admin/dashboard.html?error=citizen_only");
+                                } else {
+                                    resp.sendRedirect(req.getContextPath() + "/login.html");
+                                }
                             }
                         })
                 )

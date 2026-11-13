@@ -60,6 +60,10 @@ public class AuthService {
     }
 
     public User authenticate(String email, String password) {
+        return authenticate(email, password, null);
+    }
+
+    public User authenticate(String email, String password, String expectedRole) {
         String cleanEmail = ValidationUtil.clean(email);
         if (ValidationUtil.isBlank(cleanEmail) || password == null || password.isEmpty()) {
             throw new ServiceException(400, "Email and password are required.");
@@ -69,6 +73,24 @@ public class AuthService {
         if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
             throw new ServiceException(401, "Invalid email or password.");
         }
+
+        if (expectedRole != null && !expectedRole.isBlank()) {
+            String roleUpper = expectedRole.trim().toUpperCase();
+            if (roleUpper.startsWith("ROLE_")) {
+                roleUpper = roleUpper.substring(5);
+            }
+
+            if ("ADMIN".equalsIgnoreCase(roleUpper)) {
+                if (!User.ROLE_ADMIN.equalsIgnoreCase(user.getRole())) {
+                    throw new ServiceException(403, "Access denied. Administrator privileges required for this portal.");
+                }
+            } else if ("CITIZEN".equalsIgnoreCase(roleUpper)) {
+                if (!User.ROLE_CITIZEN.equalsIgnoreCase(user.getRole())) {
+                    throw new ServiceException(403, "Administrator account detected. Please use the Official Municipal Admin Portal.");
+                }
+            }
+        }
+
         return user;
     }
 
