@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: civicsphere
+    runtime: docker
+    dockerfilePath: Dockerfile
+    dockerContext: .
+    plan: free
+    region: oregon
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: CIVICSPHERE_DATA_DIR
+        value: /app/civicsphere-data
+      - key: CIVICSPHERE_UPLOAD_DIR
+        value: /tmp/civicsphere-uploads
+      - key: CIVICSPHERE_ADMIN_EMAIL
+        value: admin@civicsphere.gov.local
+      # Set custom admin password in Render Environment Variables UI if desired:
+      # - key: CIVICSPHERE_ADMIN_PASSWORD
+      #   value: YourCustomPassword
+      # Set demo seed to true if sample complaints are desired on first boot:
+      # - key: CIVICSPHERE_SEED_DEMO
+      #   value: "false"
+
+    # NOTE: To enable Render Persistent Disks (requires Starter plan $7/mo + $1/mo disk):
+    # plan: starter
+    # disk:
+    #   name: civicsphere-data
+    #   mountPath: /app/civicsphere-data
+    #   sizeGB: 1
