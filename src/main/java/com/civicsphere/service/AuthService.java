@@ -5,7 +5,6 @@ import com.civicsphere.repository.UserRepository;
 import com.civicsphere.util.ValidationUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -18,7 +17,6 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional
     public User registerCitizen(String fullName, String email, String phone,
                                 String address, String password, String confirmPassword) {
         String cleanName = ValidationUtil.clean(fullName);
@@ -61,7 +59,6 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    @Transactional(readOnly = true)
     public User authenticate(String email, String password) {
         String cleanEmail = ValidationUtil.clean(email);
         if (ValidationUtil.isBlank(cleanEmail) || password == null || password.isEmpty()) {
@@ -75,7 +72,6 @@ public class AuthService {
         return user;
     }
 
-    @Transactional(readOnly = true)
     public User getById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ServiceException(404, "User account not found."));

@@ -40,3 +40,4 @@ application-local.properties
 .env
 uploads/
 civicsphere-uploads/
+civicsphere-data/

@@ -7,4 +7,5 @@ target/
 *.log
 .DS_Store
 civicsphere-uploads/
+civicsphere-data/
 application-local.properties

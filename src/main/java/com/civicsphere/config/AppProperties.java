@@ -5,9 +5,18 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "civicsphere")
 public class AppProperties {
 
+    private String dataDir = "civicsphere-data";
     private String uploadDir = "civicsphere-uploads";
     private long maxUploadBytes = 5L * 1024L * 1024L;
     private Recurrence recurrence = new Recurrence();
+
+    public String getDataDir() {
+        return dataDir;
+    }
+
+    public void setDataDir(String dataDir) {
+        this.dataDir = dataDir;
+    }
 
     public String getUploadDir() {
         return uploadDir;
@@ -63,4 +72,3 @@ public class AppProperties {
         }
     }
 }
-

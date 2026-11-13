@@ -1,75 +1,46 @@
 package com.civicsphere.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
-@Entity
-@Table(
-        name = "recurrence_records",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uq_recurrence_pair",
-                columnNames = {"original_complaint_id", "recurring_complaint_id"}
-        )
-)
 public class RecurrenceRecord {
     public static final String STATUS_PENDING = "PENDING";
     public static final String STATUS_CONFIRMED = "CONFIRMED";
     public static final String STATUS_REJECTED = "REJECTED";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "recurrence_id")
     private Integer recurrenceId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "original_complaint_id", nullable = false)
-    private Complaint originalComplaint;
+    @JsonProperty("originalComplaintId")
+    private Integer originalComplaintId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "recurring_complaint_id", nullable = false)
-    private Complaint recurringComplaint;
+    @JsonProperty("recurringComplaintId")
+    private Integer recurringComplaintId;
 
-    @Column(name = "matching_score", nullable = false)
     private int matchingScore;
-
-    @Column(name = "matching_reason", nullable = false, columnDefinition = "TEXT")
     private String matchingReason;
-
-    @Column(name = "verification_status", nullable = false, length = 20)
     private String verificationStatus = STATUS_PENDING;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "verified_by")
-    private User verifiedByUser;
+    @JsonProperty("verifiedByUserId")
+    private Integer verifiedByUserId;
 
-    @Column(name = "verified_at")
     private Instant verifiedAt;
-
-    @Column(name = "verification_remarks", columnDefinition = "TEXT")
     private String verificationRemarks;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
-        if (verificationStatus == null) {
-            verificationStatus = STATUS_PENDING;
-        }
+    @JsonIgnore
+    private Complaint originalComplaint;
+
+    @JsonIgnore
+    private Complaint recurringComplaint;
+
+    @JsonIgnore
+    private User verifiedByUser;
+
+    public RecurrenceRecord() {
+        this.createdAt = Instant.now();
+        this.verificationStatus = STATUS_PENDING;
     }
 
     public Integer getRecurrenceId() {
@@ -80,12 +51,39 @@ public class RecurrenceRecord {
         this.recurrenceId = recurrenceId;
     }
 
+    public Integer getOriginalComplaintId() {
+        return originalComplaintId != null ? originalComplaintId : (originalComplaint != null ? originalComplaint.getComplaintId() : null);
+    }
+
+    public void setOriginalComplaintId(Integer originalComplaintId) {
+        this.originalComplaintId = originalComplaintId;
+    }
+
+    public Integer getRecurringComplaintId() {
+        return recurringComplaintId != null ? recurringComplaintId : (recurringComplaint != null ? recurringComplaint.getComplaintId() : null);
+    }
+
+    public void setRecurringComplaintId(Integer recurringComplaintId) {
+        this.recurringComplaintId = recurringComplaintId;
+    }
+
+    public Integer getVerifiedByUserId() {
+        return verifiedByUserId != null ? verifiedByUserId : (verifiedByUser != null ? verifiedByUser.getUserId() : null);
+    }
+
+    public void setVerifiedByUserId(Integer verifiedByUserId) {
+        this.verifiedByUserId = verifiedByUserId;
+    }
+
     public Complaint getOriginalComplaint() {
         return originalComplaint;
     }
 
     public void setOriginalComplaint(Complaint originalComplaint) {
         this.originalComplaint = originalComplaint;
+        if (originalComplaint != null) {
+            this.originalComplaintId = originalComplaint.getComplaintId();
+        }
     }
 
     public Complaint getRecurringComplaint() {
@@ -94,6 +92,9 @@ public class RecurrenceRecord {
 
     public void setRecurringComplaint(Complaint recurringComplaint) {
         this.recurringComplaint = recurringComplaint;
+        if (recurringComplaint != null) {
+            this.recurringComplaintId = recurringComplaint.getComplaintId();
+        }
     }
 
     public int getMatchingScore() {
@@ -117,7 +118,7 @@ public class RecurrenceRecord {
     }
 
     public void setVerificationStatus(String verificationStatus) {
-        this.verificationStatus = verificationStatus;
+        this.verificationStatus = verificationStatus != null ? verificationStatus : STATUS_PENDING;
     }
 
     public User getVerifiedByUser() {
@@ -126,6 +127,11 @@ public class RecurrenceRecord {
 
     public void setVerifiedByUser(User verifiedByUser) {
         this.verifiedByUser = verifiedByUser;
+        if (verifiedByUser != null) {
+            this.verifiedByUserId = verifiedByUser.getUserId();
+        } else {
+            this.verifiedByUserId = null;
+        }
     }
 
     public Instant getVerifiedAt() {

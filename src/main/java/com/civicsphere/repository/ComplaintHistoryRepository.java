@@ -1,17 +1,21 @@
 package com.civicsphere.repository;
 
 import com.civicsphere.model.ComplaintHistory;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface ComplaintHistoryRepository extends JpaRepository<ComplaintHistory, Integer> {
+public interface ComplaintHistoryRepository {
 
-    @EntityGraph(attributePaths = {"updatedByUser"})
+    List<ComplaintHistory> findAll();
+
+    Optional<ComplaintHistory> findById(Integer historyId);
+
+    ComplaintHistory save(ComplaintHistory history);
+
     List<ComplaintHistory> findByComplaintComplaintIdOrderByUpdatedAtAscHistoryIdAsc(Integer complaintId);
 
-    @EntityGraph(attributePaths = {"complaint", "updatedByUser"})
     List<ComplaintHistory> findTop12ByComplaintUserUserIdOrderByUpdatedAtDescHistoryIdDesc(Integer userId);
-}
 
+    long count();
+}

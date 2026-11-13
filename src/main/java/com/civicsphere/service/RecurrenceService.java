@@ -14,7 +14,6 @@ import com.civicsphere.util.LocationUtil;
 import com.civicsphere.util.TextSimilarityUtil;
 import com.civicsphere.util.ValidationUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -78,7 +77,6 @@ public class RecurrenceService {
         this.appProperties = appProperties != null ? appProperties : new AppProperties();
     }
 
-    @Transactional
     public List<RecurrenceRecord> detectAndRecordRecurrences(Complaint newComplaint, User actor) {
         if (newComplaint == null || newComplaint.getComplaintId() == null || newComplaint.getCategory() == null) {
             return List.of();
@@ -138,7 +136,6 @@ public class RecurrenceService {
         return createdRecords;
     }
 
-    @Transactional
     public RecurrenceRecord createManualRecurrenceLink(Complaint original, Complaint newComplaint, User reporter) {
         if (original == null || newComplaint == null
                 || Objects.equals(original.getComplaintId(), newComplaint.getComplaintId())) {
@@ -237,7 +234,6 @@ public class RecurrenceService {
         return new EvaluationResult(eligible, score, summary);
     }
 
-    @Transactional(readOnly = true)
     public List<RecurrenceDTO> listRecurrences(String statusFilter) {
         String cleanStatus = null;
         if (!ValidationUtil.isBlank(statusFilter) && !"ALL".equalsIgnoreCase(statusFilter.trim())) {
@@ -248,14 +244,12 @@ public class RecurrenceService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public RecurrenceDTO getRecurrenceById(Integer recurrenceId) {
         RecurrenceRecord record = recurrenceRepository.findDetailedById(recurrenceId)
                 .orElseThrow(() -> new ServiceException(404, "Recurrence record not found."));
         return RecurrenceDTO.fromEntity(record);
     }
 
-    @Transactional
     public RecurrenceDTO verifyRecurrence(Integer recurrenceId, String decision, String remarks, Integer adminUserId) {
         String cleanDecision = decision == null ? "" : decision.trim().toUpperCase();
         if (!ValidationUtil.isValidRecurrenceVerification(cleanDecision)) {

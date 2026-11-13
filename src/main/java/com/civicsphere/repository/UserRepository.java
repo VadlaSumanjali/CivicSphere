@@ -1,15 +1,23 @@
 package com.civicsphere.repository;
 
 import com.civicsphere.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository {
+
+    List<User> findAll();
+
+    Optional<User> findById(Integer userId);
+
+    User save(User user);
+
     Optional<User> findByEmailIgnoreCase(String email);
 
     boolean existsByEmailIgnoreCase(String email);
 
     long countByRole(String role);
-}
 
+    long count();
+}

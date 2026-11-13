@@ -1,12 +1,17 @@
 package com.civicsphere.repository;
 
 import com.civicsphere.model.Department;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface DepartmentRepository extends JpaRepository<Department, Integer> {
+public interface DepartmentRepository {
+
+    List<Department> findAll();
+
+    Optional<Department> findById(Integer departmentId);
+
+    Department save(Department department);
 
     List<Department> findByActiveTrueOrderByNameAsc();
 
@@ -18,8 +23,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
 
     long countByActiveTrue();
 
-    @Query("SELECT c.department.departmentId, COUNT(c) " +
-           "FROM Complaint c WHERE c.department IS NOT NULL GROUP BY c.department.departmentId")
+    long count();
+
     List<Object[]> countAssignedComplaintsByDepartment();
 }
-

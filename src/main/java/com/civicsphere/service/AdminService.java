@@ -10,7 +10,6 @@ import com.civicsphere.repository.ComplaintRepository;
 import com.civicsphere.repository.RecurrenceRecordRepository;
 import com.civicsphere.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -45,7 +44,6 @@ public class AdminService {
         this.recurrenceService = recurrenceService;
     }
 
-    @Transactional(readOnly = true)
     public Map<String, Object> getDashboardAnalytics() {
         Map<String, Object> data = new LinkedHashMap<>();
 

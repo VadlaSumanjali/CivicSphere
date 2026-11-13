@@ -1,11 +1,19 @@
 package com.civicsphere.repository;
 
 import com.civicsphere.model.Category;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface CategoryRepository extends JpaRepository<Category, Integer> {
+public interface CategoryRepository {
+
+    List<Category> findAll();
+
+    Optional<Category> findById(Integer categoryId);
+
+    Category save(Category category);
+
     List<Category> findByActiveTrueOrderByNameAsc();
-}
 
+    long count();
+}

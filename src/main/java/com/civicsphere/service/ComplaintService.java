@@ -4,6 +4,7 @@ import com.civicsphere.config.AppProperties;
 import com.civicsphere.dto.ComplaintDTO;
 import com.civicsphere.dto.ComplaintHistoryDTO;
 import com.civicsphere.dto.PagedResponse;
+import com.civicsphere.dto.PagedResult;
 import com.civicsphere.dto.RecurrenceDTO;
 import com.civicsphere.model.Category;
 import com.civicsphere.model.Complaint;
@@ -19,15 +20,7 @@ import com.civicsphere.repository.RecurrenceRecordRepository;
 import com.civicsphere.repository.UserRepository;
 import com.civicsphere.util.FileUploadUtil;
 import com.civicsphere.util.ValidationUtil;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Predicate;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -69,12 +62,10 @@ public class ComplaintService {
         this.appProperties = appProperties;
     }
 
-    @Transactional(readOnly = true)
     public List<Category> listActiveCategories() {
         return categoryRepository.findByActiveTrueOrderByNameAsc();
     }
 
-    @Transactional(readOnly = true)
     public Map<String, Object> getPublicOverview() {
         Map<String, Object> overview = new LinkedHashMap<>();
         overview.put("categories", listActiveCategories());
@@ -90,7 +81,6 @@ public class ComplaintService {
         return overview;
     }
 
-    @Transactional
     public ComplaintDTO submitComplaint(Integer userId, Integer categoryId, String title, String description,
                                         String area, String city, String state, String landmark,
                                         Double latitude, Double longitude, MultipartFile imageFile,
@@ -200,13 +190,11 @@ public class ComplaintService {
         }
     }
 
-    @Transactional(readOnly = true)
     public PagedResponse<ComplaintDTO> listCitizenComplaints(Integer userId, String search, Integer categoryId,
                                                              String status, int page, int pageSize) {
         return findFilteredComplaints(userId, search, categoryId, status, null, page, pageSize);
     }
 
-    @Transactional(readOnly = true)
     public PagedResponse<ComplaintDTO> listAllComplaints(String search, Integer categoryId, String status,
                                                          String location, int page, int pageSize) {
         return findFilteredComplaints(null, search, categoryId, status, location, page, pageSize);
@@ -229,66 +217,13 @@ public class ComplaintService {
         final String cleanSearch = ValidationUtil.clean(search);
         final String cleanLocation = ValidationUtil.clean(location);
 
-        Specification<Complaint> spec = (root, query, cb) -> {
-            if (query != null && query.getResultType() != Long.class && query.getResultType() != long.class) {
-                root.fetch("user", JoinType.LEFT);
-                root.fetch("category", JoinType.LEFT);
-                root.fetch("department", JoinType.LEFT);
-                root.fetch("parentComplaint", JoinType.LEFT);
-            }
+        PagedResult<Complaint> pagedResult = complaintRepository.findFiltered(
+                userId, cleanSearch, categoryId, finalStatus, cleanLocation, safePage, safeSize);
 
-            List<Predicate> predicates = new ArrayList<>();
-            if (userId != null) {
-                predicates.add(cb.equal(root.get("user").get("userId"), userId));
-            }
-            if (categoryId != null && categoryId > 0) {
-                predicates.add(cb.equal(root.get("category").get("categoryId"), categoryId));
-            }
-            if (finalStatus != null) {
-                if ("RESOLVED_OR_CLOSED".equals(finalStatus)) {
-                    predicates.add(root.get("status").in(Complaint.STATUS_RESOLVED, Complaint.STATUS_CLOSED));
-                } else {
-                    predicates.add(cb.equal(root.get("status"), finalStatus));
-                }
-            }
-            if (!ValidationUtil.isBlank(cleanSearch)) {
-                String pattern = "%" + cleanSearch.toLowerCase() + "%";
-                List<Predicate> searchPredicates = new ArrayList<>();
-                searchPredicates.add(cb.like(cb.lower(root.get("title")), pattern));
-                searchPredicates.add(cb.like(cb.lower(root.get("description")), pattern));
-                searchPredicates.add(cb.like(cb.lower(root.get("area")), pattern));
-                searchPredicates.add(cb.like(cb.lower(root.get("city")), pattern));
-                searchPredicates.add(cb.like(cb.lower(cb.coalesce(root.get("landmark"), "")), pattern));
-                if (cleanSearch.matches("\\d+")) {
-                    try {
-                        searchPredicates.add(cb.equal(root.get("complaintId"), Integer.parseInt(cleanSearch)));
-                    } catch (NumberFormatException ignored) {
-                    }
-                }
-                predicates.add(cb.or(searchPredicates.toArray(new Predicate[0])));
-            }
-            if (!ValidationUtil.isBlank(cleanLocation)) {
-                String locPattern = "%" + cleanLocation.toLowerCase() + "%";
-                predicates.add(cb.or(
-                        cb.like(cb.lower(root.get("area")), locPattern),
-                        cb.like(cb.lower(root.get("city")), locPattern),
-                        cb.like(cb.lower(root.get("state")), locPattern),
-                        cb.like(cb.lower(cb.coalesce(root.get("landmark"), "")), locPattern)
-                ));
-            }
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-
-        Pageable pageable = PageRequest.of(
-                safePage - 1, safeSize,
-                Sort.by(Sort.Direction.DESC, "submittedAt").and(Sort.by(Sort.Direction.DESC, "complaintId"))
-        );
-        Page<Complaint> resultPage = complaintRepository.findAll(spec, pageable);
-        List<ComplaintDTO> enriched = enrichDtos(resultPage.getContent());
-        return new PagedResponse<>(enriched, resultPage.getTotalElements(), safePage, safeSize);
+        List<ComplaintDTO> enriched = enrichDtos(pagedResult.items());
+        return new PagedResponse<>(enriched, pagedResult.totalCount(), safePage, safeSize);
     }
 
-    @Transactional(readOnly = true)
     public ComplaintDTO getComplaintDetails(Integer complaintId, User currentUser) {
         Complaint complaint = complaintRepository.findDetailedByComplaintId(complaintId)
                 .orElseThrow(() -> new ServiceException(404, "Complaint not found."));
@@ -300,7 +235,6 @@ public class ComplaintService {
         return buildDetailedDto(complaint);
     }
 
-    @Transactional(readOnly = true)
     public List<ComplaintDTO> getRelatedRecurrences(Integer complaintId, User currentUser) {
         Complaint complaint = complaintRepository.findDetailedByComplaintId(complaintId)
                 .orElseThrow(() -> new ServiceException(404, "Complaint not found."));
@@ -322,7 +256,6 @@ public class ComplaintService {
         return enrichDtos(related);
     }
 
-    @Transactional
     public ComplaintDTO assignDepartment(Integer complaintId, Integer departmentId, String remarks, Integer adminUserId) {
         if (departmentId == null || departmentId <= 0) {
             throw new ServiceException(400, "Valid departmentId is required.");
@@ -370,7 +303,6 @@ public class ComplaintService {
         return buildDetailedDto(saved);
     }
 
-    @Transactional
     public ComplaintDTO updateStatus(Integer complaintId, String requestedStatus, String remarks,
                                      MultipartFile resolutionImageFile, Integer adminUserId) {
         String nextStatus = requestedStatus == null ? "" : requestedStatus.trim().toUpperCase();
@@ -451,7 +383,6 @@ public class ComplaintService {
         }
     }
 
-    @Transactional(readOnly = true)
     public Map<String, Object> getCitizenDashboard(Integer userId) {
         Map<String, Object> dashboard = new LinkedHashMap<>();
 
@@ -497,7 +428,6 @@ public class ComplaintService {
         return dashboard;
     }
 
-    @Transactional(readOnly = true)
     public boolean isImageAccessibleByUser(String normalizedPath, Integer userId) {
         return complaintRepository.isImageAccessibleByUser(normalizedPath, userId);
     }

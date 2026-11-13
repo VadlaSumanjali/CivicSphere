@@ -1,21 +1,10 @@
 package com.civicsphere.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 
-@Entity
-@Table(name = "complaints")
 public class Complaint {
     public static final String STATUS_SUBMITTED = "SUBMITTED";
     public static final String STATUS_UNDER_REVIEW = "UNDER_REVIEW";
@@ -24,91 +13,59 @@ public class Complaint {
     public static final String STATUS_RESOLVED = "RESOLVED";
     public static final String STATUS_CLOSED = "CLOSED";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "complaint_id")
     private Integer complaintId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JsonProperty("userId")
+    private Integer userId;
+
+    @JsonProperty("categoryId")
+    private Integer categoryId;
+
+    @JsonProperty("departmentId")
+    private Integer departmentId;
+
+    @JsonProperty("parentComplaintId")
+    private Integer parentComplaintId;
+
+    @JsonProperty("resolvedByUserId")
+    private Integer resolvedByUserId;
+
+    @JsonIgnore
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JsonIgnore
     private Category category;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
+    @JsonIgnore
     private Department department;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_complaint_id")
+    @JsonIgnore
     private Complaint parentComplaint;
 
-    @Column(name = "title", nullable = false, length = 180)
-    private String title;
-
-    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
-    private String description;
-
-    @Column(name = "area", nullable = false, length = 120)
-    private String area;
-
-    @Column(name = "city", nullable = false, length = 80)
-    private String city;
-
-    @Column(name = "state", nullable = false, length = 80)
-    private String state;
-
-    @Column(name = "landmark", length = 180)
-    private String landmark;
-
-    @Column(name = "latitude")
-    private Double latitude;
-
-    @Column(name = "longitude")
-    private Double longitude;
-
-    @Column(name = "image_path", length = 255)
-    private String imagePath;
-
-    @Column(name = "resolution_image_path", length = 255)
-    private String resolutionImagePath;
-
-    @Column(name = "status", nullable = false, length = 30)
-    private String status = STATUS_SUBMITTED;
-
-    @Column(name = "submitted_at", nullable = false, updatable = false)
-    private Instant submittedAt;
-
-    @Column(name = "resolved_at")
-    private Instant resolvedAt;
-
-    @Column(name = "resolution_remarks", columnDefinition = "TEXT")
-    private String resolutionRemarks;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resolved_by")
+    @JsonIgnore
     private User resolvedByUser;
 
-    @Column(name = "updated_at", nullable = false)
+    private String title;
+    private String description;
+    private String area;
+    private String city;
+    private String state;
+    private String landmark;
+    private Double latitude;
+    private Double longitude;
+    private String imagePath;
+    private String resolutionImagePath;
+    private String status = STATUS_SUBMITTED;
+    private Instant submittedAt;
+    private Instant resolvedAt;
+    private String resolutionRemarks;
     private Instant updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
+    public Complaint() {
         Instant now = Instant.now();
-        if (submittedAt == null) {
-            submittedAt = now;
-        }
-        updatedAt = now;
-        if (status == null) {
-            status = STATUS_SUBMITTED;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
+        this.submittedAt = now;
+        this.updatedAt = now;
+        this.status = STATUS_SUBMITTED;
     }
 
     public Integer getComplaintId() {
@@ -119,12 +76,55 @@ public class Complaint {
         this.complaintId = complaintId;
     }
 
+    public Integer getUserId() {
+        return userId != null ? userId : (user != null ? user.getUserId() : null);
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId != null ? categoryId : (category != null ? category.getCategoryId() : null);
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public Integer getDepartmentId() {
+        return departmentId != null ? departmentId : (department != null ? department.getDepartmentId() : null);
+    }
+
+    public void setDepartmentId(Integer departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public Integer getParentComplaintId() {
+        return parentComplaintId != null ? parentComplaintId : (parentComplaint != null ? parentComplaint.getComplaintId() : null);
+    }
+
+    public void setParentComplaintId(Integer parentComplaintId) {
+        this.parentComplaintId = parentComplaintId;
+    }
+
+    public Integer getResolvedByUserId() {
+        return resolvedByUserId != null ? resolvedByUserId : (resolvedByUser != null ? resolvedByUser.getUserId() : null);
+    }
+
+    public void setResolvedByUserId(Integer resolvedByUserId) {
+        this.resolvedByUserId = resolvedByUserId;
+    }
+
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+        if (user != null) {
+            this.userId = user.getUserId();
+        }
     }
 
     public Category getCategory() {
@@ -133,6 +133,9 @@ public class Complaint {
 
     public void setCategory(Category category) {
         this.category = category;
+        if (category != null) {
+            this.categoryId = category.getCategoryId();
+        }
     }
 
     public Department getDepartment() {
@@ -141,6 +144,9 @@ public class Complaint {
 
     public void setDepartment(Department department) {
         this.department = department;
+        if (department != null) {
+            this.departmentId = department.getDepartmentId();
+        }
     }
 
     public Complaint getParentComplaint() {
@@ -149,6 +155,24 @@ public class Complaint {
 
     public void setParentComplaint(Complaint parentComplaint) {
         this.parentComplaint = parentComplaint;
+        if (parentComplaint != null) {
+            this.parentComplaintId = parentComplaint.getComplaintId();
+        } else {
+            this.parentComplaintId = null;
+        }
+    }
+
+    public User getResolvedByUser() {
+        return resolvedByUser;
+    }
+
+    public void setResolvedByUser(User resolvedByUser) {
+        this.resolvedByUser = resolvedByUser;
+        if (resolvedByUser != null) {
+            this.resolvedByUserId = resolvedByUser.getUserId();
+        } else {
+            this.resolvedByUserId = null;
+        }
     }
 
     public String getTitle() {
@@ -236,7 +260,7 @@ public class Complaint {
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.status = status != null ? status : STATUS_SUBMITTED;
     }
 
     public Instant getSubmittedAt() {
@@ -261,14 +285,6 @@ public class Complaint {
 
     public void setResolutionRemarks(String resolutionRemarks) {
         this.resolutionRemarks = resolutionRemarks;
-    }
-
-    public User getResolvedByUser() {
-        return resolvedByUser;
-    }
-
-    public void setResolvedByUser(User resolvedByUser) {
-        this.resolvedByUser = resolvedByUser;
     }
 
     public Instant getUpdatedAt() {

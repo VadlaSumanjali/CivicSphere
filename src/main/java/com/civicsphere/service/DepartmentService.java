@@ -5,7 +5,6 @@ import com.civicsphere.model.Department;
 import com.civicsphere.repository.DepartmentRepository;
 import com.civicsphere.util.ValidationUtil;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,6 @@ public class DepartmentService {
         this.departmentRepository = departmentRepository;
     }
 
-    @Transactional(readOnly = true)
     public List<DepartmentDTO> listDepartments(boolean activeOnly) {
         List<Department> departments = activeOnly
                 ? departmentRepository.findByActiveTrueOrderByNameAsc()
@@ -38,7 +36,6 @@ public class DepartmentService {
                 .toList();
     }
 
-    @Transactional
     public DepartmentDTO createDepartment(String name, String description, String contactEmail, String contactPhone) {
         String cleanName = ValidationUtil.clean(name);
         String cleanDesc = ValidationUtil.clean(description);
@@ -61,7 +58,6 @@ public class DepartmentService {
         return DepartmentDTO.fromEntity(saved, 0L);
     }
 
-    @Transactional
     public DepartmentDTO updateDepartment(Integer departmentId, String name, String description,
                                           String contactEmail, String contactPhone, Boolean active) {
         String cleanName = ValidationUtil.clean(name);
@@ -95,7 +91,6 @@ public class DepartmentService {
         return DepartmentDTO.fromEntity(saved, count);
     }
 
-    @Transactional
     public DepartmentDTO deactivateDepartment(Integer departmentId) {
         Department existing = departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ServiceException(404, "Department not found."));

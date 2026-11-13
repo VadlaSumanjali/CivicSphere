@@ -11,31 +11,34 @@ import com.civicsphere.repository.ComplaintRepository;
 import com.civicsphere.repository.DepartmentRepository;
 import com.civicsphere.repository.UserRepository;
 import com.civicsphere.service.RecurrenceService;
+import com.civicsphere.storage.JsonStorage;
 import com.civicsphere.util.ValidationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
- * Optional CLI/environment-driven bootstrapper for creating an ADMIN account
- * and realistic demo complaints without storing plaintext credentials in source control.
- *
- * Usage:
- *   java -jar target/civicsphere.jar --civicsphere.setup=true [--civicsphere.seed-demo=true]
- * Requires env vars: CIVICSPHERE_ADMIN_EMAIL, CIVICSPHERE_ADMIN_PASSWORD (min 8 chars).
+ * Bootstrapper for creating an initial ADMIN account securely
+ * and optionally seeding demo complaints without hardcoded default passwords.
  */
 @Component
 public class AdminBootstrapRunner implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(AdminBootstrapRunner.class);
+    private static final String CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*";
 
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
@@ -44,6 +47,8 @@ public class AdminBootstrapRunner implements ApplicationRunner {
     private final ComplaintHistoryRepository historyRepository;
     private final RecurrenceService recurrenceService;
     private final PasswordEncoder passwordEncoder;
+    private final JsonStorage jsonStorage;
+    private final Environment environment;
 
     public AdminBootstrapRunner(UserRepository userRepository,
                                 CategoryRepository categoryRepository,
@@ -51,7 +56,9 @@ public class AdminBootstrapRunner implements ApplicationRunner {
                                 ComplaintRepository complaintRepository,
                                 ComplaintHistoryRepository historyRepository,
                                 RecurrenceService recurrenceService,
-                                PasswordEncoder passwordEncoder) {
+                                PasswordEncoder passwordEncoder,
+                                JsonStorage jsonStorage,
+                                Environment environment) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.departmentRepository = departmentRepository;
@@ -59,62 +66,101 @@ public class AdminBootstrapRunner implements ApplicationRunner {
         this.historyRepository = historyRepository;
         this.recurrenceService = recurrenceService;
         this.passwordEncoder = passwordEncoder;
+        this.jsonStorage = jsonStorage;
+        this.environment = environment;
     }
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) {
-        boolean setup = args.containsOption("civicsphere.setup")
-                || "true".equalsIgnoreCase(System.getenv("CIVICSPHERE_SETUP"));
-        boolean seedDemo = args.containsOption("civicsphere.seed-demo")
-                || "true".equalsIgnoreCase(System.getenv("CIVICSPHERE_SEED_DEMO"));
+        ensureAdminAccount(args);
+        seedDemoDataIfRequested(args);
+    }
 
-        if (!setup && !seedDemo) {
+    private void ensureAdminAccount(ApplicationArguments args) {
+        long adminCount = userRepository.countByRole(User.ROLE_ADMIN);
+        boolean setupRequested = args.containsOption("civicsphere.setup")
+                || "true".equalsIgnoreCase(System.getenv("CIVICSPHERE_SETUP"))
+                || "true".equalsIgnoreCase(environment.getProperty("civicsphere.setup"));
+
+        if (adminCount > 0 && !setupRequested) {
             return;
         }
 
-        String adminEmail = System.getenv("CIVICSPHERE_ADMIN_EMAIL");
-        String adminPass = System.getenv("CIVICSPHERE_ADMIN_PASSWORD");
-        String rawAdminName = System.getenv("CIVICSPHERE_ADMIN_NAME");
+        String adminEmail = getOptionOrEnv(args, "civicsphere.admin-email", "CIVICSPHERE_ADMIN_EMAIL");
+        if (ValidationUtil.isBlank(adminEmail)) {
+            adminEmail = "admin@civicsphere.gov.local";
+        } else {
+            adminEmail = adminEmail.trim().toLowerCase();
+        }
+
+        String adminPass = getOptionOrEnv(args, "civicsphere.admin-password", "CIVICSPHERE_ADMIN_PASSWORD");
+        boolean autoGenerated = false;
+        if (!ValidationUtil.isValidPassword(adminPass)) {
+            adminPass = generateSecureRandomPassword(16);
+            autoGenerated = true;
+        }
+
+        String rawAdminName = getOptionOrEnv(args, "civicsphere.admin-name", "CIVICSPHERE_ADMIN_NAME");
         final String adminName = ValidationUtil.isBlank(rawAdminName)
                 ? "Municipal Commissioner"
                 : rawAdminName.trim();
 
-        if (!ValidationUtil.isValidEmail(adminEmail) || !ValidationUtil.isValidPassword(adminPass)) {
-            log.warn("CIVICSPHERE_SETUP requested, but CIVICSPHERE_ADMIN_EMAIL / CIVICSPHERE_ADMIN_PASSWORD are invalid or unset.");
-            return;
-        }
+        final String finalPass = adminPass;
+        final String finalEmail = adminEmail;
 
-        User admin = userRepository.findByEmailIgnoreCase(adminEmail.trim()).orElseGet(() -> {
+        User admin = userRepository.findByEmailIgnoreCase(finalEmail).orElseGet(() -> {
             User created = new User();
             created.setFullName(adminName);
-            created.setEmail(adminEmail.trim().toLowerCase());
+            created.setEmail(finalEmail);
             created.setPhone("9000000001");
             created.setAddress("CivicSphere Municipal Command Center");
-            created.setPasswordHash(passwordEncoder.encode(adminPass));
+            created.setPasswordHash(passwordEncoder.encode(finalPass));
             created.setRole(User.ROLE_ADMIN);
             return userRepository.save(created);
         });
-        log.info("Administrator account verified: {}", admin.getEmail());
 
+        if (autoGenerated) {
+            String notice = String.format(
+                    "================================================================================\n" +
+                    "  CIVICSPHERE INITIAL ADMINISTRATOR CREATED (ZERO-DATABASE INITIALIZATION)\n" +
+                    "  Email:    %s\n" +
+                    "  Password: %s\n" +
+                    "  NOTE: Secure random password generated. Change upon initial sign-in.\n" +
+                    "================================================================================",
+                    finalEmail, finalPass
+            );
+            log.info("\n{}", notice);
+            writeCredentialsFile("initial-admin-credentials.txt", notice);
+        } else {
+            log.info("Administrator account verified: {}", admin.getEmail());
+        }
+    }
+
+    private void seedDemoDataIfRequested(ApplicationArguments args) {
+        boolean seedDemo = args.containsOption("civicsphere.seed-demo")
+                || "true".equalsIgnoreCase(System.getenv("CIVICSPHERE_SEED_DEMO"))
+                || "true".equalsIgnoreCase(environment.getProperty("civicsphere.seed-demo"));
         if (!seedDemo) {
             return;
         }
 
-        String citizenEmail = System.getenv("CIVICSPHERE_DEMO_CITIZEN_EMAIL");
-        String citizenPass = System.getenv("CIVICSPHERE_DEMO_CITIZEN_PASSWORD");
-        if (!ValidationUtil.isValidEmail(citizenEmail) || !ValidationUtil.isValidPassword(citizenPass)) {
-            log.warn("CIVICSPHERE_SEED_DEMO requested, but CIVICSPHERE_DEMO_CITIZEN_EMAIL / CIVICSPHERE_DEMO_CITIZEN_PASSWORD are invalid or unset.");
-            return;
+        String citizenEmail = getOptionOrEnv(args, "civicsphere.demo-citizen-email", "CIVICSPHERE_DEMO_CITIZEN_EMAIL");
+        if (ValidationUtil.isBlank(citizenEmail)) {
+            citizenEmail = "citizen@civicsphere.gov.local";
+        }
+        String citizenPass = getOptionOrEnv(args, "civicsphere.demo-citizen-password", "CIVICSPHERE_DEMO_CITIZEN_PASSWORD");
+        if (!ValidationUtil.isValidPassword(citizenPass)) {
+            citizenPass = "Citizen#Pass2026";
         }
 
+        final String finalCitizenPass = citizenPass;
         User citizen = userRepository.findByEmailIgnoreCase(citizenEmail.trim()).orElseGet(() -> {
             User created = new User();
             created.setFullName("Ananya Rao");
-            created.setEmail(citizenEmail.trim().toLowerCase());
+            created.setEmail("citizen@civicsphere.gov.local");
             created.setPhone("9876543210");
             created.setAddress("Kukatpally Housing Board, Hyderabad, Telangana");
-            created.setPasswordHash(passwordEncoder.encode(citizenPass));
+            created.setPasswordHash(passwordEncoder.encode(finalCitizenPass));
             created.setRole(User.ROLE_CITIZEN);
             return userRepository.save(created);
         });
@@ -125,6 +171,11 @@ public class AdminBootstrapRunner implements ApplicationRunner {
             log.warn("Cannot seed demo complaints without seeded categories and departments.");
             return;
         }
+
+        User admin = userRepository.findAll().stream()
+                .filter(u -> User.ROLE_ADMIN.equalsIgnoreCase(u.getRole()))
+                .findFirst()
+                .orElse(citizen);
 
         Category roadCategory = categories.stream()
                 .filter(c -> c.getName().toLowerCase().contains("road"))
@@ -181,5 +232,41 @@ public class AdminBootstrapRunner implements ApplicationRunner {
         recurrenceService.detectAndRecordRecurrences(savedRecurring, citizen);
         log.info("Seeded historical Complaint #{} and recurring Complaint #{}.",
                 savedHistorical.getComplaintId(), savedRecurring.getComplaintId());
+    }
+
+    private String getOptionOrEnv(ApplicationArguments args, String optionName, String envName) {
+        if (args != null && args.containsOption(optionName)) {
+            List<String> values = args.getOptionValues(optionName);
+            if (values != null && !values.isEmpty() && !values.get(0).isBlank()) {
+                return values.get(0).trim();
+            }
+        }
+        String env = System.getenv(envName);
+        if (env != null && !env.isBlank()) {
+            return env.trim();
+        }
+        String prop = environment.getProperty(optionName);
+        if (prop != null && !prop.isBlank()) {
+            return prop.trim();
+        }
+        return null;
+    }
+
+    private String generateSecureRandomPassword(int length) {
+        java.util.concurrent.ThreadLocalRandom random = java.util.concurrent.ThreadLocalRandom.current();
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(CHARS.charAt(random.nextInt(CHARS.length())));
+        }
+        return sb.toString();
+    }
+
+    private void writeCredentialsFile(String filename, String content) {
+        try {
+            Path file = jsonStorage.getDataDir().resolve(filename);
+            Files.writeString(file, content, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            log.warn("Could not write credentials file {}: {}", filename, e.getMessage());
+        }
     }
 }
