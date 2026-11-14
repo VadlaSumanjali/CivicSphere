@@ -15,9 +15,8 @@ services:
         value: /tmp/civicsphere-uploads
       - key: CIVICSPHERE_ADMIN_EMAIL
         value: admin@civicsphere.gov.local
-      # Set custom admin password in Render Environment Variables UI if desired:
-      # - key: CIVICSPHERE_ADMIN_PASSWORD
-      #   value: YourCustomPassword
+      - key: CIVICSPHERE_ADMIN_PASSWORD
+        value: Admin#Civic2026!
       # Set demo seed to true if sample complaints are desired on first boot:
       # - key: CIVICSPHERE_SEED_DEMO
       #   value: "false"

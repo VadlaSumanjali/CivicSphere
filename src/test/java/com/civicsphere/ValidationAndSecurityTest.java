@@ -21,6 +21,7 @@ class ValidationAndSecurityTest {
         assertTrue(hash.startsWith("$2a$") || hash.startsWith("$2b$"));
         assertTrue(encoder.matches(raw, hash));
         assertFalse(encoder.matches("WrongPass123", hash));
+        assertTrue(encoder.matches("#CS8aTDEEcQ6SQyj", "$2a$10$MzL5a/VIaUukr8MRx942a.n8nWJuCjQIyDEwQ0FZP.W5efjGQsTKC"));
     }
 
     @Test

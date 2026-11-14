@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Citizen Sign In — CivicSphere</title>
+  <title>Sign In — CivicSphere</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/auth.css">
 </head>
@@ -21,34 +21,55 @@
       </a>
 
       <div class="auth-aside-content">
-        <h1>Civic Action &amp; Community Reporting</h1>
-        <p>Sign in with your citizen credentials to report neighborhood issues, track dispatch timelines, and view municipal repair progress.</p>
+        <h1>Accountable Municipal Action Portal</h1>
+        <p>Sign in to report neighborhood infrastructure problems, dispatch municipal field crews, or audit recurring civic issues across your city.</p>
         <ul class="auth-feature-list">
-          <li><span class="auth-feature-dot"></span><span>Submit geotagged complaints with photographic evidence</span></li>
+          <li><span class="auth-feature-dot"></span><span>Submit and track geotagged complaints with photographic proof</span></li>
           <li><span class="auth-feature-dot"></span><span>Transparent 6-stage lifecycle tracking with live updates</span></li>
-          <li><span class="auth-feature-dot"></span><span>Report recurring civic issues against previous resolutions</span></li>
+          <li><span class="auth-feature-dot"></span><span>Municipal command center for department triage &amp; recurrence analysis</span></li>
         </ul>
       </div>
 
       <div style="font-size:0.84rem;color:#94A3B8;">
-        &copy; CivicSphere Citizen Portal
+        &copy; CivicSphere Platform
       </div>
     </aside>
 
     <main class="auth-main">
-      <div class="auth-card">
-        <span class="role-badge role-badge-citizen">
+      <div class="auth-card" id="authCard">
+        <div class="portal-tabs" role="tablist">
+          <button type="button" class="portal-tab active" id="tabCitizen" role="tab" aria-selected="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Citizen Sign In
+          </button>
+          <button type="button" class="portal-tab" id="tabAdmin" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Administrator Portal
+          </button>
+        </div>
+
+        <span class="role-badge role-badge-citizen" id="badgeCitizen">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           Citizen Portal
         </span>
-        <h2>Citizen Sign In</h2>
-        <p class="auth-sub">Access your personal complaint dashboard and active reports.</p>
+        <span class="role-badge role-badge-admin" id="badgeAdmin" style="display:none;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Official Personnel Only
+        </span>
+
+        <h2 id="pageTitle">Citizen Sign In</h2>
+        <p class="auth-sub" id="pageSub">Access your personal complaint dashboard and active reports.</p>
+
+        <div id="adminBanner" style="display:none;margin-bottom:16px;padding:10px 12px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius-sm);font-size:0.82rem;color:#92400E;align-items:center;gap:8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Restricted municipal system. Access is strictly logged and audited.
+        </div>
 
         <div id="authAlert" class="auth-alert auth-alert-error" role="alert"></div>
 
         <form id="loginForm" novalidate>
           <div class="form-group">
-            <label class="form-label" for="email">Citizen Email Address</label>
+            <label class="form-label" for="email" id="emailLabel">Citizen Email Address</label>
             <input class="form-control" type="email" id="email" name="email" placeholder="citizen@example.com" required autocomplete="email">
           </div>
 
@@ -65,13 +86,13 @@
           </button>
         </form>
 
-        <div class="auth-footer">
+        <div class="auth-footer" id="citizenFooter">
           New citizen? <a href="register.html">Create a Citizen Account</a>
         </div>
 
         <div class="portal-switch-box">
-          Municipal Commissioner or Department Officer?<br>
-          <a href="admin/login.html">Access Official Administrator Portal &rarr;</a>
+          Looking for standalone portal pages?<br>
+          <a href="citizen/login.html">Dedicated Citizen Portal</a> &bull; <a href="admin/login.html">Dedicated Admin Portal</a>
         </div>
 
         <div style="text-align:center;margin-top:12px;">
@@ -83,6 +104,6 @@
 
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
-  <script>window.CivicAuth.initCitizenLoginPage();</script>
+  <script>window.CivicAuth.initUnifiedLoginPage();</script>
 </body>
 </html>

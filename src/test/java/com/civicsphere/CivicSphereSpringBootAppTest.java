@@ -406,4 +406,32 @@ class CivicSphereSpringBootAppTest {
         ).orElseThrow();
         assertEquals(User.ROLE_CITIZEN, registered.getRole(), "User registered publicly must ALWAYS receive CITIZEN role");
     }
+
+    @Test
+    void corsConfigurationAndPreflightOptionsWork() throws Exception {
+        mockMvc.perform(options("/api/auth/citizen/login")
+                        .header("Origin", "https://civicsphere.onrender.com")
+                        .header("Access-Control-Request-Method", "POST"))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Access-Control-Allow-Origin"));
+    }
+
+    @Test
+    void viewControllersMapExtensionlessRoutes() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/login.html"));
+
+        mockMvc.perform(get("/register"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/register.html"));
+
+        mockMvc.perform(get("/citizen/login"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/citizen/login.html"));
+
+        mockMvc.perform(get("/admin/login"))
+                .andExpect(status().isOk())
+                .andExpect(forwardedUrl("/admin/login.html"));
+    }
 }

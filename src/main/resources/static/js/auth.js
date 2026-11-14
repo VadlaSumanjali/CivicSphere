@@ -202,6 +202,133 @@
     });
   }
 
+  function initUnifiedLoginPage() {
+    setupPasswordToggles();
+    const form = document.getElementById('loginForm');
+    if (!form) return;
+
+    let currentRole = 'CITIZEN';
+    const tabCitizen = document.getElementById('tabCitizen');
+    const tabAdmin = document.getElementById('tabAdmin');
+    const badgeCitizen = document.getElementById('badgeCitizen');
+    const badgeAdmin = document.getElementById('badgeAdmin');
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSub = document.getElementById('pageSub');
+    const adminBanner = document.getElementById('adminBanner');
+    const submitBtn = document.getElementById('loginSubmitBtn');
+    const citizenFooter = document.getElementById('citizenFooter');
+    const emailLabel = document.getElementById('emailLabel');
+    const emailInput = document.getElementById('email');
+
+    function switchRole(role) {
+      currentRole = role;
+      hideAuthAlert();
+      if (role === 'ADMIN') {
+        if (tabCitizen) {
+          tabCitizen.classList.remove('active');
+          tabCitizen.setAttribute('aria-selected', 'false');
+        }
+        if (tabAdmin) {
+          tabAdmin.classList.add('active');
+          tabAdmin.setAttribute('aria-selected', 'true');
+        }
+        if (badgeCitizen) badgeCitizen.style.display = 'none';
+        if (badgeAdmin) badgeAdmin.style.display = 'inline-flex';
+        if (adminBanner) adminBanner.style.display = 'flex';
+        if (citizenFooter) citizenFooter.style.display = 'none';
+        if (pageTitle) pageTitle.textContent = 'Administrator Sign In';
+        if (pageSub) pageSub.textContent = 'Municipal Command Center triage terminal.';
+        if (emailLabel) emailLabel.textContent = 'Administrator Email Address';
+        if (emailInput) emailInput.placeholder = 'admin@civicsphere.gov.local';
+        if (submitBtn) {
+          submitBtn.textContent = 'Sign In to Command Center';
+          submitBtn.style.background = '#0F172A';
+          submitBtn.style.borderColor = '#0F172A';
+        }
+      } else {
+        if (tabCitizen) {
+          tabCitizen.classList.add('active');
+          tabCitizen.setAttribute('aria-selected', 'true');
+        }
+        if (tabAdmin) {
+          tabAdmin.classList.remove('active');
+          tabAdmin.setAttribute('aria-selected', 'false');
+        }
+        if (badgeCitizen) badgeCitizen.style.display = 'inline-flex';
+        if (badgeAdmin) badgeAdmin.style.display = 'none';
+        if (adminBanner) adminBanner.style.display = 'none';
+        if (citizenFooter) citizenFooter.style.display = 'block';
+        if (pageTitle) pageTitle.textContent = 'Citizen Sign In';
+        if (pageSub) pageSub.textContent = 'Access your personal complaint dashboard and active reports.';
+        if (emailLabel) emailLabel.textContent = 'Citizen Email Address';
+        if (emailInput) emailInput.placeholder = 'citizen@example.com';
+        if (submitBtn) {
+          submitBtn.textContent = 'Sign In to Citizen Dashboard';
+          submitBtn.style.background = '';
+          submitBtn.style.borderColor = '';
+        }
+      }
+    }
+
+    if (tabCitizen) tabCitizen.addEventListener('click', () => switchRole('CITIZEN'));
+    if (tabAdmin) tabAdmin.addEventListener('click', () => switchRole('ADMIN'));
+
+    // Check query params for alerts/redirects
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('portal') === 'admin' || params.get('error') === 'admin_required') {
+      switchRole('ADMIN');
+      if (params.get('error') === 'admin_required') {
+        showAuthAlert('Administrator privileges required. Please sign in to the Command Center.');
+      }
+    } else if (params.get('error') === 'citizen_only') {
+      switchRole('CITIZEN');
+      showAuthAlert('The Citizen Portal is for citizens only.');
+    }
+
+    // Redirect if already authenticated
+    API.request('/api/auth/me')
+      .then((res) => {
+        const user = res.data && res.data.user;
+        if (user) {
+          const dest = user.role === 'ADMIN' ? '/admin/dashboard.html' : '/citizen/dashboard.html';
+          window.location.replace(API.url(dest));
+        }
+      })
+      .catch(() => {});
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAuthAlert();
+
+      const email = emailInput.value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) {
+        showAuthAlert('Please enter both your email address and password.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = currentRole === 'ADMIN' ? 'Verifying Administrator Credentials...' : 'Signing in to Citizen Dashboard...';
+
+      const endpoint = currentRole === 'ADMIN' ? '/api/auth/admin/login' : '/api/auth/citizen/login';
+
+      try {
+        const res = await API.request(endpoint, {
+          method: 'POST',
+          body: { email, password, role: currentRole }
+        });
+        const user = res.data.user;
+        API.showToast((currentRole === 'ADMIN' ? 'Welcome, Administrator ' : 'Welcome back, ') + user.fullName, 'success');
+        const dest = (user.role === 'ADMIN' || currentRole === 'ADMIN') ? '/admin/dashboard.html' : '/citizen/dashboard.html';
+        window.location.replace(API.url(dest));
+      } catch (err) {
+        showAuthAlert(err.message || 'Authentication failed. Please verify your credentials.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = currentRole === 'ADMIN' ? 'Sign In to Command Center' : 'Sign In to Citizen Dashboard';
+      }
+    });
+  }
+
   function initRegisterPage() {
     setupPasswordToggles();
     const form = document.getElementById('registerForm');
@@ -265,7 +392,8 @@
   window.CivicAuth = {
     requireAuth,
     logout,
-    initLoginPage: initCitizenLoginPage,
+    initLoginPage: initUnifiedLoginPage,
+    initUnifiedLoginPage,
     initCitizenLoginPage,
     initAdminLoginPage,
     initRegisterPage

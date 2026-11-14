@@ -29,7 +29,9 @@
     if (path.startsWith('http://') || path.startsWith('https://')) {
       return path;
     }
-    return BASE_PATH + (path.startsWith('/') ? path : '/' + path);
+    const customBase = window.CIVICSPHERE_API_BASE || '';
+    const base = customBase || BASE_PATH;
+    return base + (path.startsWith('/') ? path : '/' + path);
   }
 
   async function request(path, options = {}) {
@@ -50,7 +52,7 @@
       method,
       headers,
       body: options.body,
-      credentials: 'same-origin'
+      credentials: 'include'
     });
 
     let payload = null;
@@ -67,6 +69,9 @@
     }
 
     if (!response.ok || (payload && payload.success === false)) {
+      if (response.status === 401 || (payload && payload.message && payload.message.toLowerCase().includes('csrf'))) {
+        setCsrfToken('');
+      }
       const err = new Error((payload && payload.message) || 'Request failed');
       err.status = response.status;
       err.payload = payload;
